@@ -171,7 +171,7 @@ test('settings API returns state and never leaks keys', async () => {
   const state = await call(route.handler, { url: '/api/image-hub/state' })
   assert.equal(state.status, 200)
   assert.equal(state.body.config.profiles.length, 3)
-  assert.equal(state.body.providers.length, 6)
+  assert.equal(state.body.providers.length, 9)
   assert.equal(JSON.stringify(state.body).includes('"k1"'), false)
   assert.equal(state.body.config.profiles[0].keyHint.length > 0, true)
 })

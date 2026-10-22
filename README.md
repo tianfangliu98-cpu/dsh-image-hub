@@ -1,6 +1,6 @@
 # dsh-image-hub
 
-**多 API 生图插件 for DeepSeek Harness** —— 一套 provider 抽象，原生支持 Labnana、OpenAI 兼容（官方/中转站）、Gemini、Seedream（火山方舟）、DashScope（通义万相）、本地 ComfyUI。
+**多 API 生图插件 for DeepSeek Harness** —— 一套 provider 抽象，原生支持 Labnana、OpenAI（官方/兼容）、Gemini、Seedream（火山方舟）、DashScope（通义万相）、xAI Grok、智谱 GLM-Image、本地 ComfyUI。
 
 在设置里存**多套 API 配置**，每套填自己的地址、Key、模型；对话里用 `image_generate` / `image_edit`，随时指定用哪套、换哪个模型。
 
@@ -9,10 +9,13 @@
 | provider | 说明 | 生图 | 改图 | 参考图 | 拉模型 |
 | --- | --- | :--: | :--: | :----: | :----: |
 | `labnana` | Labnana（火星电波）原生 OpenAPI | ✅ | ✅ | 14 张 | ✅ |
+| `openai` | OpenAI 官方 | ✅ | ✅ | 支持 | ✅ |
 | `openai-compatible` | OpenAI 官方 / 各类中转站 / xAI / 智谱 | ✅ | ✅ | 支持 | ✅ |
 | `gemini` | Google Gemini 原生 `generateContent` | ✅ | ✅ | 支持 | ✅ |
 | `seedream` | 火山方舟 Seedream / SeedEdit | ✅ | ✅ | 支持 | — |
 | `dashscope` | 通义万相 / Qwen-Image | ✅ | ✅ | 支持 | — |
+| `xai` | xAI Grok Imagine | ✅ | — | — | ✅ |
+| `zhipu` | 智谱 GLM-Image | ✅ | — | — | — |
 | `comfyui` | 本地 ComfyUI（导入 API 格式工作流） | ✅ | — | — | — |
 
 > 每个 provider 的字段不同：ComfyUI 多一个工作流 JSON，其余主要是「地址 + Key + 模型」。
@@ -25,7 +28,7 @@ pnpm dsh plugin --profile desktop add ./dsh-image-hub     # 本地目录
 pnpm dsh plugin --profile desktop add github:<你>/dsh-image-hub
 ```
 
-安装后重启 DSH，在 **设置 → 插件 → 图像中枢** 里配置。
+安装后重启 DSH，在 **设置 → 插件 → 生图配置** 里配置。
 
 ## 配置
 
@@ -68,14 +71,14 @@ http://user:pass@127.0.0.1:7890
 | `prompt` | 必填 |
 | `profile` | 用哪套配置（名称或 id），默认当前激活的那套 |
 | `model` | 本次覆盖模型 |
-| `aspect_ratio` | `1:1` / `3:2` / `2:3` / `4:3` / `3:4` / `16:9` / `9:16` / `21:9` |
+| `aspect_ratio` | `1:1` 方形 / `2:3` 照片 / `3:2` 横版照片 / `3:4` 竖版海报 / `4:3` 传统横版 / `4:5` 大画幅 / `5:4` 横版大画幅 / `9:16` 竖版 / `16:9` 横版 / `21:9` 超宽屏 |
 | `image_size` | `1K` / `2K` / `4K` |
 | `source_attachment_ids` / `source_paths` | 参考图（会话附件 id 或工作区路径） |
 
 ## 开发
 
 ```bash
-node --test "tests/*.test.mjs"    # 24 个用例：核心工具、6 个 provider 适配、客户端 bundle
+node --test "tests/*.test.mjs"    # 41 个用例：核心、9 个 provider 适配、代理、客户端 bundle、宿主端到端
 node --check lib/client.js
 ```
 

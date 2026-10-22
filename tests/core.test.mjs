@@ -66,7 +66,7 @@ test('resolveProfile prefers the requested id, then active, then first', () => {
 test('providers expose the catalog the settings page needs', () => {
   const catalog = providerCatalog()
   const ids = catalog.map((p) => p.id)
-  assert.deepEqual(ids.sort(), ['comfyui', 'dashscope', 'gemini', 'labnana', 'openai-compatible', 'seedream'])
+  assert.deepEqual(ids.sort(), ['comfyui', 'dashscope', 'gemini', 'labnana', 'openai', 'openai-compatible', 'seedream', 'xai', 'zhipu'])
   const labnana = getProvider('labnana')
   assert.equal(labnana.supports.generate, true)
   assert.ok(labnana.models.includes('gemini-3.1-flash-image'))

@@ -2,7 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 
 import { HubError } from '../lib/core.js'
-import { comfyui, dashscope, gemini, getProvider, labnana, openaiCompatible, seedream } from '../lib/providers.js'
+import { comfyui, dashscope, gemini, getProvider, labnana, openaiCompatible, seedream, xai, zhipu } from '../lib/providers.js'
 
 const PNG = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
 
@@ -160,7 +160,36 @@ test('non-2xx responses become HubError with the upstream message', async () => 
 })
 
 test('provider registry resolves every id', () => {
-  for (const id of ['labnana', 'openai-compatible', 'gemini', 'seedream', 'dashscope', 'comfyui']) {
+  for (const id of ['labnana', 'openai', 'openai-compatible', 'gemini', 'seedream', 'dashscope', 'xai', 'zhipu', 'comfyui']) {
     assert.equal(getProvider(id).id, id)
   }
+})
+
+test('xai sends aspect_ratio + resolution', async () => {
+  const fetchImpl = stub(() => jsonResponse({ data: [{ b64_json: PNG }] }))
+  const result = await xai.generate(baseCtx({
+    profile: { baseURL: 'https://api.x.ai/v1', apiKey: 'xk', provider: 'xai' },
+    model: 'grok-imagine-image',
+    fetchImpl,
+  }))
+  const body = JSON.parse(fetchImpl.calls[0].init.body)
+  assert.equal(body.aspect_ratio, '16:9')
+  assert.equal(body.resolution, '2K')
+  assert.equal(result.mediaType, 'image/png')
+})
+
+test('zhipu sends a pixel size string', async () => {
+  const fetchImpl = stub(() => jsonResponse({ data: [{ url: 'https://img.example/z.png' }] }))
+  const combined = stub((url) => {
+    if (url.startsWith('https://img.example/')) return new Response(Buffer.from(PNG, 'base64'), { status: 200 })
+    return jsonResponse({ data: [{ url: 'https://img.example/z.png' }] })
+  })
+  const result = await zhipu.generate(baseCtx({
+    profile: { baseURL: 'https://open.bigmodel.cn/api/paas/v4', apiKey: 'zk', provider: 'zhipu' },
+    model: 'glm-image',
+    fetchImpl: combined,
+  }))
+  const body = JSON.parse(combined.calls[0].init.body)
+  assert.equal(body.size, '2560x1440')
+  assert.equal(result.mediaType, 'image/png')
 })
