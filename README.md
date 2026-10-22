@@ -17,6 +17,7 @@
 | `xai` | xAI Grok Imagine | ✅ | — | — | ✅ |
 | `zhipu` | 智谱 GLM-Image | ✅ | — | — | — |
 | `comfyui` | 本地 ComfyUI（导入 API 格式工作流） | ✅ | — | — | — |
+| `chatgpt-sub` / `grok-sub` / `google-sub` | 订阅通道**占位**（需要账号登录，暂未接入，可先存配置） | — | — | — | — |
 
 > 每个 provider 的字段不同：ComfyUI 多一个工作流 JSON，其余主要是「地址 + Key + 模型」。
 
@@ -34,7 +35,8 @@ pnpm dsh plugin --profile desktop add github:<你>/dsh-image-hub
 
 点「+ 添加 API」，选接口类型，填地址 / Key / 模型（可以点「拉取模型」自动取），保存。
 
-- 多套配置可以共存，选一套「设为默认」
+- 每套卡片独立操作：**保存 / 取消 / 恢复默认 / 启用停用 / 删除**，互不影响
+- 多套配置可以共存，选一套「设为默认」（底部「保存全局设置」生效）
 - 每套有自己的默认比例（1:1 … 21:9）和清晰度（1K/2K/4K）
 - 每套可以单独填**代理**（可选）
 - 全局可以设「生成结果另存到工作区」和子目录
@@ -78,7 +80,7 @@ http://user:pass@127.0.0.1:7890
 ## 开发
 
 ```bash
-node --test "tests/*.test.mjs"    # 41 个用例：核心、9 个 provider 适配、代理、客户端 bundle、宿主端到端
+node --test "tests/*.test.mjs"    # 44 个用例：核心、12 个 provider 适配、代理、客户端 bundle、宿主端到端
 node --check lib/client.js
 ```
 

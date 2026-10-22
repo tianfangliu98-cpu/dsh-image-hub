@@ -160,7 +160,7 @@ test('non-2xx responses become HubError with the upstream message', async () => 
 })
 
 test('provider registry resolves every id', () => {
-  for (const id of ['labnana', 'openai', 'openai-compatible', 'gemini', 'seedream', 'dashscope', 'xai', 'zhipu', 'comfyui']) {
+  for (const id of ['labnana', 'openai', 'openai-compatible', 'gemini', 'seedream', 'dashscope', 'xai', 'zhipu', 'comfyui', 'chatgpt-sub', 'grok-sub', 'google-sub']) {
     assert.equal(getProvider(id).id, id)
   }
 })
@@ -192,4 +192,11 @@ test('zhipu sends a pixel size string', async () => {
   const body = JSON.parse(combined.calls[0].init.body)
   assert.equal(body.size, '2560x1440')
   assert.equal(result.mediaType, 'image/png')
+})
+
+test('subscription channels are explicit placeholders', async () => {
+  const { chatgptSubscription } = await import('../lib/providers.js')
+  await assert.rejects(() => chatgptSubscription.generate({}), /账号登录|登录流程/)
+  const result = await chatgptSubscription.test({})
+  assert.match(result.detail, /未接入|登录/)
 })

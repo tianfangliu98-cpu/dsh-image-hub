@@ -171,7 +171,7 @@ test('settings API returns state and never leaks keys', async () => {
   const state = await call(route.handler, { url: '/api/image-hub/state' })
   assert.equal(state.status, 200)
   assert.equal(state.body.config.profiles.length, 3)
-  assert.equal(state.body.providers.length, 9)
+  assert.equal(state.body.providers.length, 12)
   assert.equal(JSON.stringify(state.body).includes('"k1"'), false)
   assert.equal(state.body.config.profiles[0].keyHint.length > 0, true)
 })
@@ -200,4 +200,36 @@ test('settings API test + models hit the upstream', async () => {
   const models = await call(route.handler, { method: 'POST', url: '/api/image-hub/models', body: { profileId: 'p-oai' } })
   assert.equal(models.body.ok, true)
   assert.deepEqual(models.body.models, ['gpt-image-1'])
+})
+
+test('saving one profile does not touch the others', async () => {
+  const route = routes[0]
+  const before = await call(route.handler, { url: '/api/image-hub/state' })
+  const target = before.body.config.profiles.find((p) => p.id === 'p-oai')
+  const saved = await call(route.handler, {
+    method: 'POST',
+    url: '/api/image-hub/profile',
+    body: { profile: { ...target, name: 'Renamed OpenAI', apiKey: '' } },
+  })
+  assert.equal(saved.status, 200)
+  const lab = saved.body.config.profiles.find((p) => p.id === 'p-lab')
+  assert.equal(lab.name, 'Mock Labnana', 'other profiles stay untouched')
+  assert.equal(saved.body.config.profiles.find((p) => p.id === 'p-oai').name, 'Renamed OpenAI')
+  const raw = JSON.parse(await readFile(path.join(dshHome, 'image-hub', 'config.json'), 'utf8'))
+  assert.equal(raw.profiles.find((p) => p.id === 'p-oai').apiKey, 'k2', 'blank key keeps the stored one')
+})
+
+test('disabling a profile blocks generation with a clear error', async () => {
+  const route = routes[0]
+  const toggled = await call(route.handler, {
+    method: 'POST',
+    url: '/api/image-hub/profile/toggle',
+    body: { id: 'p-lab', enabled: false },
+  })
+  assert.equal(toggled.body.config.profiles.find((p) => p.id === 'p-lab').enabled, false)
+  await assert.rejects(
+    () => tool('image_generate').execute({ prompt: 'x', profile: 'Mock Labnana' }, exec()),
+    /已停用/,
+  )
+  await call(route.handler, { method: 'POST', url: '/api/image-hub/profile/toggle', body: { id: 'p-lab', enabled: true } })
 })
