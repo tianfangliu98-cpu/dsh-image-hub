@@ -1,6 +1,6 @@
 {
   "name": "dsh-image-hub",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "DSH 多 API 生图插件 —— 一套 provider 抽象，原生支持 Labnana、OpenAI 兼容、Gemini、Seedream、DashScope、ComfyUI。",
   "type": "module",
   "main": "lib/index.js",

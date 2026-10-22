@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0 — 2026-10-22
+
+- 画廊页签：在对话里注册 `conversation.view`（id `image-hub-gallery`），网格展示本次对话生成的所有图片，含模型、配置、比例、积分与 prompt；缩略图通过新增的 `POST /asset` 读取附件字节
+- 新增 `GET /gallery?session=...` 接口
+- 订阅通道：ChatGPT / Grok 改为「实验性令牌直连」（填访问令牌 + 地址即可尝试），Google 订阅明确标注暂未支持（v1internal 专有协议）
+- 测试 48 个
+
 ## 0.4.0 — 2026-10-22
 
 新增画廊与积分显示。

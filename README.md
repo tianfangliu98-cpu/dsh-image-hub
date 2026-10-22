@@ -17,7 +17,8 @@
 | `xai` | xAI Grok Imagine | ✅ | — | — | ✅ |
 | `zhipu` | 智谱 GLM-Image | ✅ | — | — | — |
 | `comfyui` | 本地 ComfyUI（导入 API 格式工作流） | ✅ | — | — | — |
-| `chatgpt-sub` / `grok-sub` / `google-sub` | 订阅通道**占位**（需要账号登录，暂未接入，可先存配置） | — | — | — | — |
+| `chatgpt-sub` / `grok-sub` | 订阅通道（**实验性**：填访问令牌直连，令牌会过期） | ✅ | — | — | — |
+| `google-sub` | 订阅通道（暂未支持，v1internal 专有协议） | — | — | — | — |
 
 > 每个 provider 的字段不同：ComfyUI 多一个工作流 JSON，其余主要是「地址 + Key + 模型」。
 
@@ -66,7 +67,9 @@ http://user:pass@127.0.0.1:7890
 把这张图背景换成草原，人物别动
 ```
 
-还有一个 `image_gallery`：列出本次对话里生成过的所有图片（prompt / 模型 / 积分），适合「看看这次都画了什么」。
+还有一个 `image_gallery`：列出本次对话里生成过的所有图片（prompt / 模型 / 积分）。
+
+另外对话顶部会有一个「画廊」页签（`conversation.view` 插槽），网格展示本次对话的所有生成图；数据来自 `<DSH_HOME>/image-hub/gallery.jsonl`。
 
 参数（`image_generate` / `image_edit` 都支持）：
 

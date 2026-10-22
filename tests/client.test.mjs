@@ -55,9 +55,12 @@ test('apply registers the settings section', () => {
     },
   }
   exported.apply(ctx)
-  assert.deepEqual(injected, ['settings.section'])
-  assert.equal(registered.length, 1)
-  assert.equal(registered[0].options.id, 'image-hub')
+  assert.deepEqual(injected, ['settings.section', 'conversation.view'])
+  assert.equal(registered.length, 2)
+  const names = registered.map((item) => item.options.name).sort()
+  assert.deepEqual(names, ['conversation.view', 'settings.section'])
+  assert.equal(registered.find((item) => item.options.name === 'settings.section').options.id, 'image-hub')
+  assert.equal(registered.find((item) => item.options.name === 'conversation.view').options.id, 'image-hub-gallery')
 })
 
 test('a broken slots service cannot escape apply', () => {

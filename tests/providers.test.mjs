@@ -194,9 +194,11 @@ test('zhipu sends a pixel size string', async () => {
   assert.equal(result.mediaType, 'image/png')
 })
 
-test('subscription channels are explicit placeholders', async () => {
-  const { chatgptSubscription } = await import('../lib/providers.js')
-  await assert.rejects(() => chatgptSubscription.generate({}), /账号登录|登录流程/)
-  const result = await chatgptSubscription.test({})
-  assert.match(result.detail, /未接入|登录/)
+test('subscription channels: google is unsupported, chatgpt/grok are experimental', async () => {
+  const { chatgptSubscription, googleSubscription } = await import('../lib/providers.js')
+  await assert.rejects(() => googleSubscription.generate({}), /v1internal|暂未/)
+  assert.equal(chatgptSubscription.subscription, true)
+  assert.equal(chatgptSubscription.needsKey, true)
+  assert.equal(chatgptSubscription.experimental, true)
+  await assert.rejects(() => chatgptSubscription.test({ profile: {} }), /访问令牌/)
 })
