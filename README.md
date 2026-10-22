@@ -4,7 +4,11 @@
 
 在设置里存**多套 API 配置**，每套填自己的地址、Key、模型；对话里用 `image_generate` / `image_edit`，随时指定用哪套、换哪个模型；画过的图在对话顶部的「画廊」里能一次看完，每张都带本次消耗与剩余积分。
 
-![示例：chibi 哈蒙德，Labnana / gemini-3.1-flash-image，1:1 · 2K](docs/screenshot.jpg)
+| 动漫海报 | 数据看板 | 服装设计稿 |
+| :--: | :--: | :--: |
+| <img src="docs/sample-1.jpg" width="270" alt="动漫海报示例" /> | <img src="docs/sample-2.jpg" width="270" alt="数据看板示例" /> | <img src="docs/sample-3.jpg" width="270" alt="服装设计稿示例" /> |
+
+<sub>示例图均由本插件生成（Labnana 通道）。</sub>
 
 ## 特性
 
