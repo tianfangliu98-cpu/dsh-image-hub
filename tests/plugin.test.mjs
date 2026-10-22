@@ -129,7 +129,7 @@ async function call(handler, { method = 'GET', url = '/', body } = {}) {
 }
 
 test('registers exactly the two image tools and one route prefix', () => {
-  assert.deepEqual(tools.map((t) => t.name).sort(), ['image_edit', 'image_generate'])
+  assert.deepEqual(tools.map((t) => t.name).sort(), ['image_edit', 'image_gallery', 'image_generate'])
   assert.equal(routes.length, 1)
   assert.equal(routes[0].path, '/api/image-hub')
 })
@@ -232,4 +232,39 @@ test('disabling a profile blocks generation with a clear error', async () => {
     /已停用/,
   )
   await call(route.handler, { method: 'POST', url: '/api/image-hub/profile/toggle', body: { id: 'p-lab', enabled: true } })
+})
+
+test('gallery lists what was generated in this conversation', async () => {
+  await tool('image_generate').execute({ prompt: 'gallery item' }, exec())
+  const value = await tool('image_gallery').execute({}, exec())
+  assert.ok(value.count >= 1)
+  assert.ok(Array.isArray(value.items))
+  assert.equal(value.items[0].prompt, 'gallery item')
+  assert.ok(value.items[0].attachment)
+  const rendered = tool('image_gallery').output.render({}, value)
+  assert.equal(rendered[0].type, 'text')
+  assert.ok(rendered.some((block) => block.type === 'image'))
+})
+
+test('credits route reports remaining credits from the upstream', async () => {
+  const route = routes[0]
+  const result = await call(route.handler, { method: 'POST', url: '/api/image-hub/credits', body: { profileId: 'p-lab' } })
+  assert.equal(result.body.ok, true)
+  assert.equal(result.body.remaining, 77)
+})
+
+test('a provider without credits answers honestly', async () => {
+  const route = routes[0]
+  const result = await call(route.handler, { method: 'POST', url: '/api/image-hub/credits', body: { profileId: 'p-oai' } })
+  assert.equal(result.body.ok, false)
+  assert.match(result.body.error, /积分|计费/)
+})
+
+test('gallery records are persisted to disk', async () => {
+  const file = path.join(dshHome, 'image-hub', 'gallery.jsonl')
+  const text = await readFile(file, 'utf8')
+  const lines = text.split('\n').filter(Boolean).map((line) => JSON.parse(line))
+  assert.ok(lines.length >= 1)
+  assert.ok(lines.every((line) => typeof line.sessionKey === 'string'))
+  assert.ok(lines.some((line) => line.prompt === 'gallery item'))
 })

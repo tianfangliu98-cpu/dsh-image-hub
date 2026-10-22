@@ -66,7 +66,9 @@ http://user:pass@127.0.0.1:7890
 把这张图背景换成草原，人物别动
 ```
 
-参数（两个工具都支持）：
+还有一个 `image_gallery`：列出本次对话里生成过的所有图片（prompt / 模型 / 积分），适合「看看这次都画了什么」。
+
+参数（`image_generate` / `image_edit` 都支持）：
 
 | 参数 | 说明 |
 | --- | --- |
@@ -80,7 +82,7 @@ http://user:pass@127.0.0.1:7890
 ## 开发
 
 ```bash
-node --test "tests/*.test.mjs"    # 44 个用例：核心、12 个 provider 适配、代理、客户端 bundle、宿主端到端
+node --test "tests/*.test.mjs"    # 47 个用例：核心、12 个 provider 适配、代理、客户端 bundle、宿主端到端
 node --check lib/client.js
 ```
 
