@@ -1,0 +1,11 @@
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+
+# 本地冒烟产物
+samples/
+*.png
+*.jpg
+!docs/**/*.png
+!docs/**/*.jpg
