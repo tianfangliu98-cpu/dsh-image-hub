@@ -97,7 +97,9 @@ http://user:pass@127.0.0.1:7890
 
 - 订阅通道是**实验性令牌直连**，没有 OAuth 登录与自动续期
 - Google 订阅走 v1internal 专有协议，未实现
+- Labnana 没有模型列表接口（`/openapi/v1/models` 返回 404），「拉取模型」返回的是插件内置清单，官方新增模型时需要更新插件
 - Seedream / DashScope / 智谱没有公开的模型列表接口，「拉取模型」不可用，需手填 id
+- Seedream 仅支持 1K/2K，选 4K 会自动降为 2K（与上游限制一致）
 - ComfyUI 只支持生图，需自备 API 格式工作流
 - 项目与 Labnana（火星电波）、OpenAI、Google 等厂商均无隶属关系
 

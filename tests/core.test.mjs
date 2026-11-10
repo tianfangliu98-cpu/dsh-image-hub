@@ -70,6 +70,8 @@ test('providers expose the catalog the settings page needs', () => {
   const labnana = getProvider('labnana')
   assert.equal(labnana.supports.generate, true)
   assert.ok(labnana.models.includes('gemini-3.1-flash-image'))
+  assert.ok(labnana.models.includes('seedream-5-5'))
+  assert.equal(labnana.models.length, 11)
   assert.throws(() => getProvider('nope'), HubError)
 })
 

@@ -202,3 +202,16 @@ test('subscription channels: google is unsupported, chatgpt/grok are experimenta
   assert.equal(chatgptSubscription.experimental, true)
   await assert.rejects(() => chatgptSubscription.test({ profile: {} }), /访问令牌/)
 })
+
+test('labnana clamps seedream 4K to 2K before sending', async () => {
+  const fetchImpl = stub(() => jsonResponse({ candidates: [{ content: { parts: [{ inlineData: { mimeType: 'image/png', data: PNG } }] } }] }))
+  await labnana.generate(baseCtx({
+    baseURL: 'https://api.labnana.com',
+    model: 'seedream-5-5',
+    imageSize: '4K',
+    fetchImpl,
+  }))
+  const body = JSON.parse(fetchImpl.calls[0].init.body)
+  assert.equal(body.provider, 'bytedance')
+  assert.equal(body.imageConfig.imageSize, '2K')
+})

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.1 — 2026-10-25
+
+跟上游对齐。
+
+- Labnana 模型清单更新到官方枚举 **11 个**：新增 `gpt-image-2.6`、`gpt-image-2-official`、`seedream-5-5`
+- Seedream 通道传 4K 时自动降为 2K（官方文档明确「传 4K 会被拒绝」）
+- README 补一条限制：Labnana 没有模型列表接口，模型清单需要随官方枚举更新
+- 测试 48 → 49
+
 ## 0.5.0 — 2026-10-22
 
 - 画廊页签：在对话里注册 `conversation.view`（id `image-hub-gallery`），网格展示本次对话生成的所有图片，含模型、配置、比例、积分与 prompt；缩略图通过新增的 `POST /asset` 读取附件字节
