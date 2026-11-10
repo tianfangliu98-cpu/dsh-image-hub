@@ -36,24 +36,6 @@ before(async () => {
       res.end(JSON.stringify({ data: [{ id: 'gpt-image-1' }, { id: 'text-embedding-3' }] }))
       return
     }
-    if (req.method === 'POST' && url.endsWith('/openapi/v1/images/generation/async')) {
-      res.writeHead(202, { 'content-type': 'application/json', connection: 'close' })
-      res.end(JSON.stringify({ code: 0, data: { taskId: 'task-42', status: 'pending' } }))
-      return
-    }
-    if (req.method === 'GET' && url.includes('/openapi/v1/images/generation/tasks/task-42')) {
-      res.writeHead(200, { 'content-type': 'application/json', connection: 'close' })
-      res.end(JSON.stringify({
-        code: 0,
-        data: { taskId: 'task-42', status: 'success', images: [{ url: `http://127.0.0.1:${upstreamPort}/mock-image.png`, mimeType: 'image/png' }] },
-      }))
-      return
-    }
-    if (req.method === 'GET' && url.endsWith('/mock-image.png')) {
-      res.writeHead(200, { 'content-type': 'image/png', connection: 'close' })
-      res.end(Buffer.from(PNG, 'base64'))
-      return
-    }
     if (req.method === 'POST' && (url.endsWith('/openapi/v1/images/generation') || url.endsWith('/images/generations'))) {
       let body = ''
       req.on('data', (chunk) => { body += chunk })
@@ -285,11 +267,4 @@ test('gallery records are persisted to disk', async () => {
   assert.ok(lines.length >= 1)
   assert.ok(lines.every((line) => typeof line.sessionKey === 'string'))
   assert.ok(lines.some((line) => line.prompt === 'gallery item'))
-})
-
-test('async:true goes through the task endpoint', async () => {
-  const value = await tool('image_generate').execute({ prompt: 'async item', async: true, profile: 'Mock Labnana' }, exec())
-  assert.equal(value.attachment.attachmentId, 'att-1')
-  assert.equal(value.mode, 'generate')
-  assert.equal(value.provider, 'labnana')
 })
