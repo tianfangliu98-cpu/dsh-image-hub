@@ -215,3 +215,32 @@ test('labnana clamps seedream 4K to 2K before sending', async () => {
   assert.equal(body.provider, 'bytedance')
   assert.equal(body.imageConfig.imageSize, '2K')
 })
+
+test('labnana async mode polls the task until success', async () => {
+  const calls = []
+  const fetchImpl = stub((url) => {
+    calls.push(url)
+    if (url.endsWith('/images/generation/async')) return jsonResponse({ code: 0, data: { taskId: 't-1', status: 'pending' } }, 202)
+    if (url.includes('/tasks/t-1')) return jsonResponse({ code: 0, data: { taskId: 't-1', status: 'success', images: [{ url: 'https://img.example/a.png', mimeType: 'image/png' }] } })
+    if (url === 'https://img.example/a.png') return new Response(Buffer.from(PNG, 'base64'), { status: 200 })
+    return jsonResponse({ error: 'unexpected ' + url }, 500)
+  })
+  const result = await labnana.generateAsync({
+    ...baseCtx({ baseURL: 'https://api.labnana.com', fetchImpl }),
+    timeoutMs: 15000,
+  })
+  assert.equal(result.mediaType, 'image/png')
+  assert.ok(calls.some((u) => u.endsWith('/images/generation/async')))
+  assert.ok(calls.some((u) => u.includes('/tasks/t-1')))
+})
+
+test('labnana async mode surfaces task failures', async () => {
+  const fetchImpl = stub((url) => {
+    if (url.endsWith('/images/generation/async')) return jsonResponse({ code: 0, data: { taskId: 't-2' } }, 202)
+    return jsonResponse({ code: 0, data: { taskId: 't-2', status: 'fail', failMsg: 'moderation blocked' } })
+  })
+  await assert.rejects(
+    () => labnana.generateAsync({ ...baseCtx({ baseURL: 'https://api.labnana.com', fetchImpl }), timeoutMs: 8000 }),
+    /moderation blocked/,
+  )
+})
